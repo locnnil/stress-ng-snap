@@ -1,0 +1,79 @@
+name: Snap build
+
+on:
+  schedule:
+    - cron: "0 1 * * 1"  # Monday morning 01:00 UTC
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  # Allow manual trigger
+  workflow_dispatch:
+
+env:
+  SNAP_AMD64: stress-ng_${{ github.run_id}}_amd64.snap
+
+jobs:
+  build:
+    outputs:
+      snap: ${{ steps.snapcraft.outputs.snap }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: snapcraft
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SNAP_AMD64 }}
+          path: ${{ steps.snapcraft.outputs.snap }}
+          if-no-files-found: error
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.SNAP_AMD64 }}
+
+      - name: Install snap artifact
+        run: |
+          sudo snap install *.snap --dangerous --devmode
+
+      - name: Get latest tag
+        id: get_tag
+        run: |
+          latest_tag=$(curl -s https://api.github.com/repos/ColinIanKing/stress-ng/tags | jq -r '.[0].name')
+          echo "Latest release: $latest_tag"
+          echo "::set-output name=tag::$latest_tag"
+
+      - name: Checkout Stress-ng source code
+        uses: actions/checkout@v4
+        with:
+          repository: ColinIanKing/stress-ng
+          ref: ${{ steps.get_tag.outputs.tag }}
+
+      - name: Apply patch to run tests from snap
+        run: |
+
+          wget https://raw.githubusercontent.com/locnnil/stress-ng-snap/main/tests/0001-test-running-for-devmode-stress-ng-snap.patch
+          git apply 0001-test-running-for-devmode-stress-ng-snap.patch
+
+      - name: Run lite-test
+        run: STRESS_NG=/snap/bin/stress-ng debian/tests/lite-test
+
+      - name: Run fast-test-all
+        run: STRESS_NG=/snap/bin/stress-ng debian/tests/fast-test-all
+
+      - name: Run verify-test-all
+        run: make verify-test-all
+
+      - name: Run slow-test-all
+        run: make slow-test-all
+
