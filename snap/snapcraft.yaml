@@ -17,30 +17,29 @@ platforms:
 grade: stable
 confinement: devmode
 
+package-repositories:
+ - type: apt
+   ppa: colin-king/stress-ng
+
 parts:
   version:
     source: .
     plugin: nil
     build-packages:
-      - jq
-      - curl
       - git
+      - stress-ng
     override-build: |
       craftctl default
-      craftctl set version=$(curl -s https://api.github.com/repos/ColinIanKing/stress-ng/tags | jq -r '.[0].name')+$(git rev-parse --short HEAD)
+      craftctl set version=$(stress-ng --version | cut -d ' ' -f 3)-$(git rev-parse --short HEAD)
 
   stress-ng:
-    source: https://github.com/ColinIanKing/stress-ng.git
-    plugin: make
-    make-parameters: ["-j$(nproc)"]
-    build-packages:
-      - build-essential
-      - make
-      - git
-      - jq
-    override-pull: |
-      craftctl default
-      git checkout $(curl -s https://api.github.com/repos/ColinIanKing/stress-ng/tags | jq -r '.[0].name')
+    plugin: nil
+    stage-packages:
+      - stress-ng
+
+  dbg:
+    source: .
+    plugin: dump
 
 apps:
   stress-ng:

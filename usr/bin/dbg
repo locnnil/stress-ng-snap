@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+ldd $SNAP/usr/bin/stress-ng
