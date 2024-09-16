@@ -3,10 +3,8 @@ base: core24
 adopt-info: version
 summary: stress-ng will stress test a computer system in various selectable ways
 description: |
-  stress-ng was originally intended to make a machine work hard and trip hardware
-  issues such as thermal overruns as well as operating system bugs that only occur when a system is being thrashed hard.
-  Use stress-ng with caution as some of the tests can make a system run hot on poorly
-  designed hardware and also can cause excessive system thrashing which may be difficult to stop.
+  This snap is intended for use only on Ubuntu Core systems.
+  For other Ubuntu installations, such as server or desktop, the recommended option is to use the Debian package.
 
 platforms:
   amd64:
@@ -39,6 +37,7 @@ parts:
       - build-essential
       - make
       - git
+      - jq
     override-pull: |
       craftctl default
       git checkout $(curl -s https://api.github.com/repos/ColinIanKing/stress-ng/tags | jq -r '.[0].name')
