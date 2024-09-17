@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: "0 0 1 */6 *" # At midnight on the 1st day of every 6th month (once per cycle).
   push:
-    branches: [ main ]
+    branches: [ main, deb-pkg ]
   pull_request:
     branches: [ main ]
   # Allow manual trigger
