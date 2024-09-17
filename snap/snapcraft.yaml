@@ -1,4 +1,4 @@
-name: stress-ng
+name: stress-ng-dev
 base: core24
 adopt-info: version
 summary: stress-ng will stress test a computer system in various selectable ways
