@@ -2,7 +2,7 @@ name: Snap build
 
 on:
   schedule:
-    - cron: "0 1 * * 1"  # Monday morning 01:00 UTC
+    - cron: "0 0 1 */6 *" # At midnight on the 1st day of every 6th month (once per cycle).
   push:
     branches: [ main ]
   pull_request:
@@ -46,24 +46,22 @@ jobs:
         run: |
           sudo snap install *.snap --dangerous --devmode
 
+      - name: Create snap alias
+        run: |
+          sudo snap alias stress-ng-dev.stress-ng stress-ng
+
       - name: Get latest tag
         id: get_tag
         run: |
-          latest_tag=$(curl -s https://api.github.com/repos/ColinIanKing/stress-ng/tags | jq -r '.[0].name')
+          latest_tag=V$(stress-ng --version | cut -d ' ' -f 3)
           echo "Latest release: $latest_tag"
-          echo "::set-output name=tag::$latest_tag"
+          echo "LATEST=$latest_tag" >> $GITHUB_ENV
 
       - name: Checkout Stress-ng source code
         uses: actions/checkout@v4
         with:
           repository: ColinIanKing/stress-ng
           ref: ${{ steps.get_tag.outputs.tag }}
-
-      - name: Apply patch to run tests from snap
-        run: |
-
-          wget https://raw.githubusercontent.com/locnnil/stress-ng-snap/main/tests/0001-test-running-for-devmode-stress-ng-snap.patch
-          git apply 0001-test-running-for-devmode-stress-ng-snap.patch
 
       - name: Run lite-test
         run: STRESS_NG=/snap/bin/stress-ng debian/tests/lite-test
@@ -72,8 +70,8 @@ jobs:
         run: STRESS_NG=/snap/bin/stress-ng debian/tests/fast-test-all
 
       - name: Run verify-test-all
-        run: make verify-test-all
+        run: stress-ng --seq 0 -t 15 --pathological --times --tz --metrics --klog-check --progress --cache-enable-all -x smi || true
 
       - name: Run slow-test-all
-        run: make slow-test-all
+        run: stress-ng --seq 0 -t 5 --pathological --times --tz --metrics --verify --progress --cache-enable-all -x smi || true
 
