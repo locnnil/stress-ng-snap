@@ -9,8 +9,8 @@ settings:
 
   # (Optional) Jira project components that should be attached to the created issue
   # Component names are case-sensitive
-  # components:
-  #   - rt-tests
+  components:
+    - stress-ng
 
   # (Optional) GitHub labels. Only issues with one of those labels will be synchronized.
   # If not specified, all issues will be synchronized
