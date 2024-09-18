@@ -55,7 +55,7 @@ jobs:
         run: |
           latest_tag=V$(stress-ng --version | cut -d ' ' -f 3)
           echo "Latest release: $latest_tag"
-          echo "LATEST=$latest_tag" >> $GITHUB_ENV
+          echo "tag=$latest_tag" >> $GITHUB_ENV
 
       - name: Checkout Stress-ng source code
         uses: actions/checkout@v4
