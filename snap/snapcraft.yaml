@@ -25,7 +25,6 @@ parts:
       - git
       - stress-ng
     override-build: |
-
       craftctl default
       craftctl set version=$(stress-ng --version | cut -d ' ' -f 3)+$(git rev-parse --short HEAD)
 
