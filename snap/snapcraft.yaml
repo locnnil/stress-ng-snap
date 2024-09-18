@@ -35,4 +35,7 @@ parts:
 
 apps:
   stress-ng:
+    plugs:
+      - system-trace
+      - hardware-observe
     command: usr/bin/stress-ng
