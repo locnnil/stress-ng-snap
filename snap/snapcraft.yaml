@@ -17,10 +17,6 @@ platforms:
 grade: stable
 confinement: devmode
 
-# package-repositories:
-#  - type: apt
-#    ppa: colin-king/stress-ng
-
 parts:
   version:
     source: .
@@ -29,19 +25,13 @@ parts:
       - git
       - stress-ng
     override-build: |
-
       craftctl default
-      # craftctl set version=$(stress-ng --version | cut -d ' ' -f 3)-$(git rev-parse --short HEAD)
-      craftctl set version=V0.17.04
+      craftctl set version=$(stress-ng --version | cut -d ' ' -f 3)+$(git rev-parse --short HEAD)
 
   stress-ng:
     plugin: nil
     stage-packages:
       - stress-ng
-
-  dbg:
-    source: .
-    plugin: dump
 
 apps:
   stress-ng:
