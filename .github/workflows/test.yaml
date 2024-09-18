@@ -64,14 +64,14 @@ jobs:
           ref: ${{ steps.get_tag.outputs.tag }}
 
       - name: Run lite-test
-        run: STRESS_NG=/snap/bin/stress-ng debian/tests/lite-test
+        run: sudo STRESS_NG=/snap/bin/stress-ng debian/tests/lite-test
 
       - name: Run fast-test-all
-        run: STRESS_NG=/snap/bin/stress-ng debian/tests/fast-test-all
+        run: sudo STRESS_NG=/snap/bin/stress-ng debian/tests/fast-test-all
 
       - name: Run verify-test-all
-        run: stress-ng --seq 0 -t 15 --pathological --times --tz --metrics --klog-check --progress --cache-enable-all -x smi || true
+        run: sudo stress-ng --seq 0 -t 15 --pathological --times --tz --metrics --klog-check --progress --cache-enable-all -x smi || true
 
       - name: Run slow-test-all
-        run: stress-ng --seq 0 -t 5 --pathological --times --tz --metrics --verify --progress --cache-enable-all -x smi || true
+        run: sudo stress-ng --seq 0 -t 5 --pathological --times --tz --metrics --verify --progress --cache-enable-all -x smi || true
 
