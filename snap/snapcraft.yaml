@@ -1,0 +1,38 @@
+name: stress-ng-dev
+base: core24
+adopt-info: version
+summary: stress-ng will stress test a computer system in various selectable ways
+description: |
+  This snap is intended for use only on Ubuntu Core systems.
+  For other Ubuntu installations, such as server or desktop, the recommended option is to use the Debian package.
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+
+grade: stable
+confinement: devmode
+
+parts:
+  version:
+    source: .
+    plugin: nil
+    build-packages:
+      - git
+      - stress-ng
+    override-build: |
+      craftctl default
+      craftctl set version=$(stress-ng --version | cut -d ' ' -f 3)+$(git rev-parse --short HEAD)
+
+  stress-ng:
+    plugin: nil
+    stage-packages:
+      - stress-ng
+
+apps:
+  stress-ng:
+    command: usr/bin/stress-ng
