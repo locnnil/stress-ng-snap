@@ -1,4 +1,5 @@
 # stress-ng snap
+[![stress-ng-dev](https://snapcraft.io/stress-ng-dev/badge.svg)](https://snapcraft.io/stress-ng-dev)
 
 This is a snap packaging of [stress-ng](https://github.com/ColinIanKing/stress-ng), a tool to load and stress a computer.
 
