@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+# Verify if SNAP_SAVE_DATA is unset, indicating the system is not Ubuntu Core
+# see: https://snapcraft.io/docs/environment-variables#heading--snap-save-data
+if [ -z "${SNAP_SAVE_DATA}" ]; then
+  echo -e "Error: Non-Ubuntu Core system detected."
+  echo -e "\tThis snap is designed to be installed only on Ubuntu Core systems (https://ubuntu.com/core)."
+  echo -e "\tIf you are using a non-Ubuntu Core system, please install stress-ng using your distribution's default package manager."
+  exit 1
+fi
